@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
+import qrc_resources
 
 
 class Ui_MainWindow(object):

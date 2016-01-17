@@ -10,6 +10,7 @@ import adminMainWindow
 import databaseManagement
 import loginDlg
 import userMainWindow
+import editItemDlg
 from generate_ean import getnumber
 
 
@@ -89,6 +90,8 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         self.connect(self.deleteUserBtn, SIGNAL('clicked()'), self.delete_user)
         self.setWindowTitle("Point of Sale System")
         self.connect(self.inventoryAddItemBtn, SIGNAL('clicked()'), self.add_new_item)
+        self.connect(self.searchBtn, SIGNAL('clicked()'), self.search_inventory)
+
 
     def inventoryBtnSignal(self):
         self.tabWidget.setCurrentWidget(self.inventoryTab)
@@ -101,7 +104,8 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         sys.exit(1)
 
     def add_user(self):
-        if self.addUserUnameEdit.isModified() == True and self.addUserPwdEdit.isModified() == True and self.addUserRptPwdEdit.isModified() == True:
+        if self.addUserUnameEdit.isModified() == True and self.addUserPwdEdit.isModified() == True and \
+                        self.addUserRptPwdEdit.isModified() == True:
             if self.addUserPwdEdit.text() == self.addUserRptPwdEdit.text():
                 uname = self.addUserUnameEdit.text()
                 pwd = self.addUserPwdEdit.text()
@@ -153,6 +157,60 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         addItem = AddNewItemDialog(self)
         addItem.show()
 
+    def search_inventory(self):
+        self.tableWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setHorizontalHeaderLabels(['ID', 'Item', 'Description'])
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        self.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        self.tableWidget.setSelectionMode(QTableWidget.SingleSelection)
+        text = self.inventorySeachEdit.text()
+        if text != '':
+            result = databaseManagement.search(text)
+            self.tableWidget.setRowCount(len(result))
+            for row in range(len(result)):
+                for i in range(3):
+                    item = QTableWidgetItem(result[row][i])
+                    self.tableWidget.setItem(row, i, item)
+            self.tableWidget.resizeColumnsToContents()
+            self.tableWidget.customContextMenuRequested.connect(self.contextMenuEvent)
+            # self.tableWidget.itemSelectionChanged.connect(self.getContextMenu)
+
+        else:
+            pass
+
+    def contextMenuEvent(self, event):
+        menu = QMenu()
+        editAction = menu.addAction('Edit')
+        deleteAction = menu.addAction('Delete')
+        self.connect(editAction, SIGNAL('triggered()'), self.edit_item)
+        self.connect(deleteAction, SIGNAL('triggered()'), self.delete_item)
+        menu.exec_(event.globalPos())
+
+    def delete_item(self):
+        print 'raise message box delete item'
+        """first confirm"""
+        confirmBox = QMessageBox(self)
+        confirmBox.setText("This item will be deleted.")
+        confirmBox.setInformativeText("Once the item is deleted, it can not be recovered.")
+        confirmBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        confirmBox.setDefaultButton(QMessageBox.Cancel)
+        ret = confirmBox.exec_()
+        if ret == QMessageBox.Ok:
+            item_id = self.tableWidget.selectedItems()[0].text()
+            self.tableWidget.removeRow(self.tableWidget.currentRow())
+            databaseManagement.delete_item(item_id)
+            # print 'Item Deleted ', item_id
+        else:
+            pass
+
+    def edit_item(self):
+        item_id = self.tableWidget.selectedItems()[0].text()
+        editItem = EditItemDialog(self)
+        editItem.show()
+
 
 class AddNewItemDialog(QDialog, addNewItemDlg.Ui_Dialog):
     def __init__(self, parent=None):
@@ -178,6 +236,22 @@ class AddNewItemDialog(QDialog, addNewItemDlg.Ui_Dialog):
         quantity = self.quantityLE.text()
         # add item into the db
         print "Written to db"
+
+
+class EditItemDialog(QDialog, editItemDlg.Ui_Dialog):
+    def __init__(self, parent=None):
+        super(EditItemDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.item_id = 1
+        _, name, desc = databaseManagement.get_item_details(self.item_id)
+        self.nameLineEdit.setText(name)
+        self.descTextEdit.setText(desc)
+        self.connect(self.editItemBtnBox, SIGNAL('accepted()'), self.update_db)
+
+    def update_db(self):
+        name = self.nameLineEdit.text()
+        desc = self.descTextEdit.toPlainText()
+        databaseManagement.update(self.item_id, name, desc)
 
 
 app = QApplication(sys.argv)
