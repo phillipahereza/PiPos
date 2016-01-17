@@ -91,6 +91,7 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         self.setWindowTitle("Point of Sale System")
         self.connect(self.inventoryAddItemBtn, SIGNAL('clicked()'), self.add_new_item)
         self.connect(self.searchBtn, SIGNAL('clicked()'), self.search_inventory)
+        self.tableWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
 
 
     def inventoryBtnSignal(self):
@@ -158,7 +159,6 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         addItem.show()
 
     def search_inventory(self):
-        self.tableWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.tableWidget.clear()
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setHorizontalHeaderLabels(['ID', 'Item', 'Description'])
@@ -176,13 +176,14 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
                     self.tableWidget.setItem(row, i, item)
             self.tableWidget.resizeColumnsToContents()
             self.tableWidget.customContextMenuRequested.connect(self.contextMenuEvent)
+            self.connect(self.tableWidget, SIGNAL('customContextMenuRequested()'), self.contextMenuEvent)
             # self.tableWidget.itemSelectionChanged.connect(self.getContextMenu)
 
         else:
             pass
 
     def contextMenuEvent(self, event):
-        menu = QMenu()
+        menu = QMenu(self)
         editAction = menu.addAction('Edit')
         deleteAction = menu.addAction('Delete')
         self.connect(editAction, SIGNAL('triggered()'), self.edit_item)
@@ -209,7 +210,7 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
     def edit_item(self):
         item_id = self.tableWidget.selectedItems()[0].text()
         editItem = EditItemDialog(self)
-        editItem.show()
+        editItem.open()
 
 
 class AddNewItemDialog(QDialog, addNewItemDlg.Ui_Dialog):
@@ -252,9 +253,18 @@ class EditItemDialog(QDialog, editItemDlg.Ui_Dialog):
         name = self.nameLineEdit.text()
         desc = self.descTextEdit.toPlainText()
         databaseManagement.update(self.item_id, name, desc)
+        print 'Updated'
+
 
 
 app = QApplication(sys.argv)
 lgn = LoginDlg()
 lgn.show()
 app.exec_()
+
+"""
+to do tomorrow 18th
+edit item - work on it
+to the sales part
+add barcode scanner functionality
+"""
