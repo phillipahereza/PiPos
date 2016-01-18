@@ -11,6 +11,7 @@ import databaseManagement
 import loginDlg
 import userMainWindow
 import editItemDlg
+import addStockDlg
 from generate_ean import getnumber
 
 
@@ -54,9 +55,23 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
     def __init__(self, parent=None):
         super(UserMainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.currentCart = []
         self.connect(self.userSales, SIGNAL('clicked()'), self.switch2sales)
         self.connect(self.userSettings, SIGNAL('clicked()'), self.switch2settings)
         self.connect(self.notificationsBtn, SIGNAL('clicked()'), self.switch2notifactions)
+        self.connect(self.searchButton, SIGNAL('clicked()'), self.search_inventory)
+        self.connect(self.searchTableWidget, SIGNAL('itemSelectionChanged()'), self.add_to_cart)
+        self.searchTableWidget.setAlternatingRowColors(True)
+        self.searchTableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        self.searchTableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        self.searchTableWidget.setSelectionMode(QTableWidget.SingleSelection)
+        self.cartTableWidget.clear()
+        self.cartTableWidget.setColumnCount(3)
+        self.cartTableWidget.setHorizontalHeaderLabels(['Item', 'Quantity', 'Price'])
+        self.cartTableWidget.setAlternatingRowColors(True)
+        self.connect(self.cashLineEdit, SIGNAL('returnPressed()'), self.return_balance)
+        self.connect(self.finishBtn, SIGNAL('clicked()'), self.on_finish)
+        self.connect(self.checkoutButton, SIGNAL('clicked()'), self.checkout)
 
     def logout(self):
         """update the database with the logout time"""
@@ -71,7 +86,72 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
     def switch2notifactions(self):
         self.stackedWidget.setCurrentWidget(self.notificationsPage)
 
-        # def change_password(self):
+    # def change_password(self):
+
+    def search_inventory(self):
+        self.searchTableWidget.clear()
+        self.searchTableWidget.setColumnCount(3)
+        self.searchTableWidget.setHorizontalHeaderLabels(['Item', 'Quantity', 'Cost'])
+        text = self.searchLineEdit.text()
+        if text != '':
+            # result = databaseManagement.search(text)
+            result = [['1', 'Book', '3000'], ['2', 'Pencil', '300'], ['5', 'Ruler', '1000']]
+            self.searchTableWidget.setRowCount(len(result))
+            for row in range(len(result)):
+                for i in range(3):
+                    item = QTableWidgetItem(result[row][i])
+                    self.searchTableWidget.setItem(row, i, item)
+            # self.searchTableWidget.resizeColumnsToContents()
+        else:
+            pass
+
+    def add_to_cart(self):
+        quantity, result = QInputDialog.getInt(self, "Quantity", "Enter quantity to buy: ")
+        if quantity > 0:
+            # print 'Quantity is %s' % quantity
+            item = self.searchTableWidget.selectedItems()[1].text()
+            px = self.searchTableWidget.selectedItems()[2].text()
+            result = [item, str(quantity), px]
+            self.currentCart.append(result)
+            self.cartTableWidget.setRowCount(len(self.currentCart))
+            for row in range(len(self.currentCart)):
+                for i in range(3):
+                    item = QTableWidgetItem(self.currentCart[row][i])
+                    self.cartTableWidget.setItem(row, i, item)
+        else:
+            pass
+
+    def checkout(self):
+        prices = []
+        for row in range(self.cartTableWidget.rowCount()):
+            item = self.cartTableWidget.item(row, 2)
+            prices.append(int(item.text()))
+        self.totalDisplay.setText(str(sum(prices)))
+
+        self.cartTableWidget.clear()
+        self.cartTableWidget.setColumnCount(3)
+        self.cartTableWidget.setHorizontalHeaderLabels(['Item', 'Quantity', 'Price'])
+        self.currentCart = []
+
+    def return_balance(self):
+        cash = int(self.cashLineEdit.text())
+        if int(self.totalDisplay.text()) > 1:
+            balance = cash - int(self.totalDisplay.text())
+            self.balanceDisplayLbl.setText(str(balance))
+        else:
+            confirmBox = QMessageBox(self)
+            confirmBox.setText("This user will be deleted.")
+            confirmBox.setInformativeText("Once the user is deleted, they can not be recovered.")
+            confirmBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            confirmBox.setDefaultButton(QMessageBox.Cancel)
+            # messagebox
+
+    def on_finish(self):
+        self.balanceDisplayLbl.setText("")
+        self.cashLineEdit.setText("")
+        self.totalDisplay.setText("")
+        self.cartTableWidget.clear()
+        # self.searchTableWidget.clear()
 
 
 class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
@@ -185,9 +265,11 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         editAction = menu.addAction('Edit')
+        restockAction = menu.addAction('Add Stock')
         deleteAction = menu.addAction('Delete')
         self.connect(editAction, SIGNAL('triggered()'), self.edit_item)
         self.connect(deleteAction, SIGNAL('triggered()'), self.delete_item)
+        self.connect(restockAction, SIGNAL('triggered()'), self.add_stock)
         menu.exec_(event.globalPos())
 
     def delete_item(self):
@@ -211,6 +293,11 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         item_id = self.tableWidget.selectedItems()[0].text()
         editItem = EditItemDialog(self)
         editItem.open()
+
+    def add_stock(self):
+        item_id = self.tableWidget.selectedItems()[0].text()
+        addStock = AddStockDialog(self)
+        addStock.show()
 
 
 class AddNewItemDialog(QDialog, addNewItemDlg.Ui_Dialog):
@@ -256,6 +343,16 @@ class EditItemDialog(QDialog, editItemDlg.Ui_Dialog):
         print 'Updated'
 
 
+class AddStockDialog(QDialog, addStockDlg.Ui_addStock):
+    def __init__(self, parent=None):
+        super(AddStockDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.connect(self.confirmBtnBox, SIGNAL('accepted()'), self.add_stock)
+
+    def add_stock(self):
+        restock_value = self.stpckAddSpinBox.value()
+        print 'Stock of %d added' % restock_value
+
 
 app = QApplication(sys.argv)
 lgn = LoginDlg()
@@ -263,8 +360,7 @@ lgn.show()
 app.exec_()
 
 """
-to do tomorrow 18th
-edit item - work on it
-to the sales part
+add stock - getInputDialog
 add barcode scanner functionality
+legit database
 """

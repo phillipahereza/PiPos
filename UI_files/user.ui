@@ -14,7 +14,7 @@
    <string>Point of Sale System</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../png/confirmed/resources.qrc">
+   <iconset resource="../res/resources.qrc">
     <normaloff>:/images/window.png</normaloff>:/images/window.png</iconset>
   </property>
   <property name="iconSize">
@@ -47,22 +47,19 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="salesStackPage">
      <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>357</x>
         <y>20</y>
-        <width>258</width>
-        <height>401</height>
+        <width>301</width>
+        <height>361</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0" colspan="2">
-        <widget class="QListWidget" name="cartListWidget"/>
-       </item>
        <item row="1" column="0">
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
@@ -82,7 +79,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../png/confirmed/resources.qrc">
+          <iconset resource="../res/resources.qrc">
            <normaloff>:/images/cart.png</normaloff>:/images/cart.png</iconset>
          </property>
          <property name="iconSize">
@@ -135,12 +132,15 @@
          </item>
         </layout>
        </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QTableWidget" name="cartTableWidget"/>
+       </item>
       </layout>
      </widget>
      <widget class="Line" name="line_2">
       <property name="geometry">
        <rect>
-        <x>360</x>
+        <x>320</x>
         <y>20</y>
         <width>20</width>
         <height>401</height>
@@ -150,41 +150,28 @@
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget_2">
+     <widget class="QPushButton" name="finishBtn">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>20</y>
-        <width>341</width>
-        <height>401</height>
+        <x>570</x>
+        <y>390</y>
+        <width>89</width>
+        <height>27</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Search: </string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="searchButton">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="../png/confirmed/resources.qrc">
-           <normaloff>:/images/search.png</normaloff>:/images/search.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="searchLineEdit"/>
-       </item>
-       <item row="1" column="0" colspan="3">
-        <widget class="QTableWidget" name="searchTableWidget"/>
-       </item>
-      </layout>
+      <property name="text">
+       <string>Finish</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>90</y>
+        <width>113</width>
+        <height>25</height>
+       </rect>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="notificationsPage">
@@ -193,18 +180,18 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>264</width>
-        <height>150</height>
+        <width>421</width>
+        <height>191</height>
        </rect>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>20</y>
+        <x>10</x>
+        <y>240</y>
         <width>311</width>
-        <height>101</height>
+        <height>110</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -228,7 +215,7 @@
         <x>10</x>
         <y>20</y>
         <width>345</width>
-        <height>132</height>
+        <height>149</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
@@ -329,7 +316,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="../png/confirmed/resources.qrc">
+     <iconset resource="../res/resources.qrc">
       <normaloff>:/images/info.png</normaloff>:/images/info.png</iconset>
     </property>
     <property name="iconSize">
@@ -352,7 +339,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="../png/confirmed/resources.qrc">
+     <iconset resource="../res/resources.qrc">
       <normaloff>:/images/makeSale.png</normaloff>:/images/makeSale.png</iconset>
     </property>
     <property name="iconSize">
@@ -375,7 +362,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="../png/confirmed/resources.qrc">
+     <iconset resource="../res/resources.qrc">
       <normaloff>:/images/logout.png</normaloff>:/images/logout.png</iconset>
     </property>
     <property name="iconSize">
@@ -398,7 +385,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="../png/confirmed/resources.qrc">
+     <iconset resource="../res/resources.qrc">
       <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
     </property>
     <property name="iconSize">
@@ -415,14 +402,31 @@
      <x>0</x>
      <y>0</y>
      <width>676</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>userSales</tabstop>
+  <tabstop>checkoutButton</tabstop>
+  <tabstop>newPwdLineEdit</tabstop>
+  <tabstop>cartTableWidget</tabstop>
+  <tabstop>rptNewPwdLineEdit</tabstop>
+  <tabstop>saveSettingsBtn</tabstop>
+  <tabstop>cancelSettingsBtn</tabstop>
+  <tabstop>notificationsBtn</tabstop>
+  <tabstop>calendarWidget</tabstop>
+  <tabstop>userLogout</tabstop>
+  <tabstop>userSettings</tabstop>
+  <tabstop>finishBtn</tabstop>
+  <tabstop>cashLineEdit</tabstop>
+  <tabstop>oldPwdLineEdit</tabstop>
+ </tabstops>
  <resources>
-  <include location="../png/confirmed/resources.qrc"/>
+  <include location="../res/resources.qrc"/>
  </resources>
  <connections/>
 </ui>
