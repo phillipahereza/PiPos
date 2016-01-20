@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
+import tables
 
 
 class Ui_MainWindow(object):
@@ -178,7 +179,7 @@ class Ui_MainWindow(object):
         self.searchBtn.setObjectName("searchBtn")
         self.horizontalLayout_2.addWidget(self.searchBtn)
         self.gridLayout_5.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
-        self.tableWidget = QtGui.QTableWidget(self.widget)
+        self.tableWidget = tables.SearchTable(self.widget)
         self.tableWidget.setObjectName("tableWidget")
         self.gridLayout_5.addWidget(self.tableWidget, 1, 0, 1, 2)
         spacerItem5 = QtGui.QSpacerItem(498, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)

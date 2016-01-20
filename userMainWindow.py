@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
+import tables
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -68,11 +69,16 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
         self.gridLayout_3.addLayout(self.gridLayout, 2, 0, 1, 2)
-        self.cartTableWidget = QtGui.QTableWidget(self.layoutWidget)
+        self.cartTableWidget = tables.CartTable(self.layoutWidget)
         self.cartTableWidget.setObjectName("cartTableWidget")
         self.cartTableWidget.setColumnCount(0)
         self.cartTableWidget.setRowCount(0)
         self.gridLayout_3.addWidget(self.cartTableWidget, 0, 0, 1, 2)
+        # self.cartTableWidget = QtGui.QTableWidget(self.layoutWidget)
+        # self.cartTableWidget.setObjectName("cartTableWidget")
+        # self.cartTableWidget.setColumnCount(0)
+        # self.cartTableWidget.setRowCount(0)
+        # self.gridLayout_3.addWidget(self.cartTableWidget, 0, 0, 1, 2)
         self.line_2 = QtGui.QFrame(self.salesStackPage)
         self.line_2.setGeometry(QtCore.QRect(320, 20, 20, 401))
         self.line_2.setFrameShape(QtGui.QFrame.VLine)
@@ -233,3 +239,7 @@ class Ui_MainWindow(object):
         self.cancelSettingsBtn.setText(QtGui.QApplication.translate("MainWindow", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
 
 import qrc_resources
+
+
+
+
