@@ -156,7 +156,7 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
         self.cartTableWidget.clear()
         self.currentCart = []
         self.cartTableWidget.setColumnCount(3)
-        self.cartTableWidget.setHorizontalHeaderLabels(['Item', 'Quantity', 'Price'])
+        self.cartTableWidget.setHorizontalHeaderLabels(['Item', 'Desc', 'Price'])
         # self.searchTableWidget.clear()
 
 
