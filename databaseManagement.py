@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 
 # conn = sqlite3.connect('/home/control/PycharmProjects/PiPos/db/posSys.db')
 conn = sqlite3.connect('/home/control/PycharmProjects/PiPos/db/new.db')
@@ -49,20 +50,40 @@ def search(item):
 
 
 def search_inventory(item):
-    item_name = item + '%'
-    global conn
-    cursor = conn.cursor()
-    cursor.execute("SELECT ID, name, description, stock, price, barcode FROM items WHERE name LIKE ?", (item_name,))
-    # returns a list of tuples
-    a = cursor.fetchall()
-    z = []
-    for i in range(len(a)):
-        x = []
-        for j in range(5):
-            t = a[i][j]
-            x.append(str(t).rstrip())
-        z.append(x)
-    return z
+    item = str(item)
+    if item[0].isalpha():
+        item_name = item + '%'
+        global conn
+        cursor = conn.cursor()
+        cursor.execute("SELECT ID, name, description, stock, price, barcode FROM items WHERE name LIKE ?", (item_name,))
+        # returns a list of tuples
+        a = cursor.fetchall()
+        z = []
+        for i in range(len(a)):
+            x = []
+            for j in range(5):
+                t = a[i][j]
+                x.append(str(t).rstrip())
+            z.append(x)
+        return z
+    """
+    test this block
+    # """
+    # elif item[0].isdigit():
+    #     item_number = item
+    #     global conn
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT ID, name, description, stock, price FROM items WHERE barcode = ?", (item_number,))
+    #     # returns a list of tuples
+    #     a = cursor.fetchall()
+    #     z = []
+    #     for i in range(len(a)):
+    #         x = []
+    #         for j in range(5):
+    #             t = a[i][j]
+    #             x.append(str(t).rstrip())
+    #         z.append(x)
+    #     return z
 
 
 def delete_item(item_id):
@@ -96,6 +117,18 @@ def add_new_item(name, quantity, price, description, barcode):
 
 
 def make_sale(total_amount):
-    conn.execute("INSERT INTO sales (total) VALUES (?)", (total_amount))
+    now = datetime.datetime.now()
+    conn.execute("INSERT INTO sales (total, timestamp) VALUES (?,?)", (total_amount, now))
+    conn.commit()
 
+
+def today_sales():
+    global conn
+    cursor = conn.cursor()
+    cursor.execute("SELECT total FROM sales WHERE timestamp >= date('now', 'start of day');")
+    total = cursor.fetchall()
+    totals = []
+    for i in range(len(total)):
+        totals.append(int(total[i][0]))
+    return sum(totals)
 

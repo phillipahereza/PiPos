@@ -72,6 +72,12 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
         self.connect(self.finishBtn, SIGNAL('clicked()'), self.on_finish)
         self.connect(self.checkoutButton, SIGNAL('clicked()'), self.checkout)
         self.connect(self.searchLineEdit, SIGNAL('returnPressed()'), self.search_inventory)
+        self.lcd_font = QFont()
+        self.lcd_font.Bold
+        sales_today = databaseManagement.today_sales()
+        self.todaysSalesLCD.setSegmentStyle(QLCDNumber.Flat)
+        self.todaysSalesLCD.setDigitCount(7)
+        self.todaysSalesLCD.display(sales_today)
 
     def logout(self):
         """update the database with the logout time"""
@@ -108,8 +114,7 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
     def add_to_cart(self):
         quantity, result = QInputDialog.getInt(self, "Quantity", "Enter quantity to buy: ")
         if quantity > 0:
-            # print 'Quantity is %s' % quantity
-            item = self.searchTableWidget.selectedItems()[1].text()
+            item = self.searchTableWidget.selectedItems()[0].text()
             px = self.searchTableWidget.selectedItems()[2].text()
             result = [item, str(quantity), str(int(px) * int(quantity))]
             self.currentCart.append(result)
@@ -129,13 +134,8 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
             item = self.cartTableWidget.item(row, 2)
             prices.append(int(item.text()))
         self.totalDisplay.setText(str(sum(prices)))
-
-        # databaseManagement.make_sale(sum(prices))
-
-        # self.cartTableWidget.clear()
-        # self.cartTableWidget.setColumnCount(3)
-        # self.cartTableWidget.setHorizontalHeaderLabels(['Item', 'Quantity', 'Price'])
-        # self.currentCart = []
+        total = int(sum(prices))
+        databaseManagement.make_sale(total)
 
     def return_balance(self):
         cash = int(self.cashLineEdit.text())
@@ -178,6 +178,10 @@ class AdminMainWindow(QMainWindow, adminMainWindow.Ui_MainWindow):
         self.connect(self.inventoryAddItemBtn, SIGNAL('clicked()'), self.add_new_item)
         self.connect(self.searchBtn, SIGNAL('clicked()'), self.search_inventory)
         self.connect(self.inventorySeachEdit, SIGNAL('returnPressed()'), self.search_inventory)
+        sales_today = databaseManagement.today_sales()
+        self.todaysSalesLCD.setSegmentStyle(QLCDNumber.Flat)
+        self.todaysSalesLCD.setDigitCount(7)
+        self.todaysSalesLCD.display(sales_today)
 
     def inventory_btn_signal(self):
         self.tabWidget.setCurrentWidget(self.inventoryTab)
@@ -305,7 +309,11 @@ lgn.show()
 app.exec_()
 
 """
-add stock - getInputDialog
-add barcode scanner functionality
-legit database
+            #############
+            # VERSION 2 #
+            #############
+    * add sanity check to confirm if the database exists
+    * add splash screen
+    * remove double pop up error
+    * improve barcode scanner capability
 """

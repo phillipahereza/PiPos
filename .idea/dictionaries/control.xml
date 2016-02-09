@@ -2,6 +2,7 @@
   <dictionary name="control">
     <words>
       <w>mainwindow</w>
+      <w>uname</w>
     </words>
   </dictionary>
 </component>
