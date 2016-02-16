@@ -1,8 +1,10 @@
 import sqlite3
 import datetime
+import os
 
-# conn = sqlite3.connect('/home/control/PycharmProjects/PiPos/db/posSys.db')
-conn = sqlite3.connect('/home/control/PycharmProjects/PiPos/db/new.db')
+root = os.getcwd()
+path = root + '/db/new.db'
+conn = sqlite3.connect(path)
 # conn = sqlite3.connect('/home/control/PycharmProjects/Aphoras/pos.db') # trial
 
 
@@ -37,6 +39,22 @@ def search(item):
     global conn
     cursor = conn.cursor()
     cursor.execute("SELECT name, description, price FROM items WHERE name LIKE ?", (item_name,))
+    # returns a list of tuples
+    a = cursor.fetchall()
+    z = []
+    for i in range(len(a)):
+        x = []
+        for j in range(3):
+            t = a[i][j]
+            x.append(str(t).rstrip())
+        z.append(x)
+    return z
+
+
+def search_barcode(item):
+    global conn
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, description, price FROM items WHERE barcode = ?", (item,))
     # returns a list of tuples
     a = cursor.fetchall()
     z = []
@@ -116,9 +134,12 @@ def add_new_item(name, quantity, price, description, barcode):
     conn.commit()
 
 
-def make_sale(total_amount):
+def make_sale(total_amount, prdt_qty):
     now = datetime.datetime.now()
     conn.execute("INSERT INTO sales (total, timestamp) VALUES (?,?)", (total_amount, now))
+    for i in prdt_qty:
+        prdt, qty = i[0], i[1]
+        conn.execute("UPDATE items SET stock = stock - ? where name = ?", (qty, prdt))
     conn.commit()
 
 

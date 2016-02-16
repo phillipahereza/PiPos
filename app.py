@@ -130,12 +130,20 @@ class UserMainWindow(QMainWindow, userMainWindow.Ui_MainWindow):
 
     def checkout(self):
         prices = []
+        products = []
+        quantities = []
         for row in range(self.cartTableWidget.rowCount()):
             item = self.cartTableWidget.item(row, 2)
+            prdt = self.cartTableWidget.item(row, 0)
+            qty = self.cartTableWidget.item(row, 1)
             prices.append(int(item.text()))
+            products.append(str(prdt.text()))
+            quantities.append(int(qty.text()))
         self.totalDisplay.setText(str(sum(prices)))
         total = int(sum(prices))
-        databaseManagement.make_sale(total)
+        prdt_qty = zip(products, quantities)
+        print prdt_qty
+        databaseManagement.make_sale(total, prdt_qty)
 
     def return_balance(self):
         cash = int(self.cashLineEdit.text())
@@ -316,4 +324,8 @@ app.exec_()
     * add splash screen
     * remove double pop up error
     * improve barcode scanner capability
+    * button to cancel transaction
+    * from admin panel, go to employee
+    * if you logout go back to the login part
+    * use sql database
 """
