@@ -70,7 +70,7 @@ class SearchTable(QTableWidget):
         edit_item_dlg.open()
 
     def add_stock(self):
-        print "add stock"
+        # print "add stock"
         item_id = str(self.selectedItems()[0].text())
         add_stock_dlg = AddStockDialog(item_id, self)
         add_stock_dlg.show()
@@ -111,9 +111,9 @@ class AddStockDialog(QDialog):
 
     def add_stock(self):
         restock_value = self.stock_spinbox.value()
-        print 'Item id: ', self.item_id
+        # print 'Item id: ', self.item_id
         databaseManagement.add_stock(self.item_id, restock_value)
-        print 'Stock of %d added' % restock_value
+        # print 'Stock of %d added' % restock_value
 
 
 class EditItemDialog(QDialog):
