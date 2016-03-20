@@ -71,7 +71,7 @@ class SearchTable(QTableWidget):
 
     def add_stock(self):
         print "add stock"
-        item_id = 1  # str(self.selectedItems()[0].text())
+        item_id = str(self.selectedItems()[0].text())
         add_stock_dlg = AddStockDialog(item_id, self)
         add_stock_dlg.show()
 
@@ -111,6 +111,8 @@ class AddStockDialog(QDialog):
 
     def add_stock(self):
         restock_value = self.stock_spinbox.value()
+        print 'Item id: ', self.item_id
+        databaseManagement.add_stock(self.item_id, restock_value)
         print 'Stock of %d added' % restock_value
 
 

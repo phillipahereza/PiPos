@@ -127,6 +127,12 @@ def update(item_id, name, desc):
     conn.commit()
 
 
+def add_stock(item_id, quantity):
+    global conn
+    conn.execute("UPDATE items SET stock = stock + ? where ID=?", (quantity, item_id))
+    conn.commit()
+    print 'done'
+
 def add_new_item(name, quantity, price, description, barcode):
     global conn
     conn.execute("INSERT INTO items (name, description, barcode, stock, price) VALUES (?, ?, ?, ?, ?)",
